@@ -1,5 +1,5 @@
 //hasmap class
-class hashmap {
+export class hashmap {
     constructor(loadfactor, capacity) {
         this.loadfactor = loadfactor;
         this.capacity = capacity;

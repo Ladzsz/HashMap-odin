@@ -1,0 +1,2 @@
+import { hashmap } from './hash';
+
