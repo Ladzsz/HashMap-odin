@@ -123,6 +123,63 @@ class hashmap {
         return `Buckets have been cleared.`;
     }
 
+    //method to return an arrayn of all keys in hasmap
+    keys() {
+        //initliazing empty array and buckets and indexes
+        let keylist = [];
+
+        //loop through all buckets
+        for (let i = 0; i < this.buckets.length; i++) {
+            const bucket = this.buckets[i]; 
+
+            // Iterate through each key-value pair in the bucket
+            for (let [key] of bucket) {
+                keylist.push(key); 
+            }
+        }
+
+        //returning array
+        return `Keys: ${keylist}`;
+    }
+
+    //method to return array of values in hashmap
+    values() {
+        //initliazing empty array and buckets and indexes
+        let valuelist = [];
+
+        //loop through all buckets
+        for (let i = 0; i < this.buckets.length; i++) {
+            const bucket = this.buckets[i]; 
+
+            // Iterate through each key-value pair in the bucket
+            for (let [key, value] of bucket) {
+                valuelist.push(value); 
+            }
+        }
+
+        //returning array
+        return `Values: ${valuelist}`;
+    }
+
+    //method to return an array that contains each key, value pair
+    entries() {
+        //initliazing empty array and buckets and indexes
+        let entrylist = [];
+
+        //loop through all buckets
+        for (let i = 0; i < this.buckets.length; i++) {
+            const bucket = this.buckets[i]; 
+
+            // Iterate through each key-value pair in the bucket
+            for (let [key, value] of bucket) {
+                entrylist.push([key, value]); 
+            }
+        }
+
+        //returning array
+        return `Entries: ${entrylist}`;
+    }
+
     // Method to resize (double the capacity and rehash entries)
     resize() {
         // Double the capacity
