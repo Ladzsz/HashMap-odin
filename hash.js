@@ -1,204 +1,150 @@
-//hasmap class
 export class hashmap {
-    constructor(loadfactor, capacity) {
-        this.loadfactor = loadfactor;
+    constructor(loadFactor = 0.75, capacity = 16) {
+        this.loadFactor = loadFactor;
         this.capacity = capacity;
         this.size = 0;
-        this.buckets = new Array(capacity).fill(null).map(() => [])
+        this.buckets = new Array(capacity).fill(null).map(() => []);
     }
 
-    //method to produde hash code
+    // Method to generate a hash code for the key
     hash(key) {
         let hashCode = 0;
-        
         const primeNumber = 31;
         for (let i = 0; i < key.length; i++) {
             hashCode = primeNumber * hashCode + key.charCodeAt(i);
         }
-    
         return hashCode;
-    } 
+    }
 
-    //method to set keys
+    // Method to resize the hashmap
+    resize() {
+        const newCapacity = this.capacity * 2;
+        const newBuckets = new Array(newCapacity).fill(null).map(() => []);
+        
+        // Rehash all entries into the new buckets
+        for (let i = 0; i < this.buckets.length; i++) {
+            const bucket = this.buckets[i];
+            for (let [key, value] of bucket) {
+                const index = this.hash(key) % newCapacity;
+                newBuckets[index].push([key, value]);
+            }
+        }
+
+        this.capacity = newCapacity;
+        this.buckets = newBuckets;
+    }
+
+    // Method to set key-value pair
     set(key, value) {
-
-        // Check if we need to resize the hash map
-        if (this.size >= this.capacity * this.loadfactor) {
+        // If the hashmap size exceeds the load factor threshold, resize it
+        if (this.size >= this.capacity * this.loadFactor) {
             this.resize();
         }
 
-        //get key index and the bucket to match
-        const index = this.hash(key); 
-        const bucket = this.buckets[index]; 
+        const index = this.hash(key) % this.capacity;
+        let bucket = this.buckets[index];
 
-        //looping through bucket to check for matching values
         for (let i = 0; i < bucket.length; i++) {
-
             if (bucket[i][0] === key) {
-                bucket[i][1] = value; 
+                bucket[i][1] = value;
                 return;
             }
         }
 
-        //incrementing and adding item
         bucket.push([key, value]);
-        this.size++
+        this.size++;
     }
 
-    //method to get key and display it in console
+    // Method to get the value by key
     get(key) {
-        const index = this.hash(key); 
-        const bucket = this.buckets[index]; 
+        const index = this.hash(key) % this.capacity;
+        const bucket = this.buckets[index];
 
-        //search through the bucket for the key
         for (let i = 0; i < bucket.length; i++) {
-            if (bucket[i][0] === key) {  
-                return bucket[i][1];  
+            if (bucket[i][0] === key) {
+                return bucket[i][1];
             }
         }
 
         return null;
     }
 
-    //method too return true or false if key in hash map
+    // Method to check if key exists
     has(key) {
-        const index = this.hash(key); 
-        const bucket = this.buckets[index]; 
+        // Calculate the index for the key using the hash function and capacity
+        const index = this.hash(key) % this.capacity;
+        const bucket = this.buckets[index];
 
-        //searching for key in hashmap
         for (let i = 0; i < bucket.length; i++) {
-            if (bucket[i][0] === key) {  
-                return `${true}: entry exists.`;
+            if (bucket[i][0] === key) {
+                return true;
             }
         }
 
-        //return false if not found
-        return `${false}: entry does not exist.`;
+        return false;
     }
 
-    //method to remove entry
+    // Method to remove a key-value pair
     remove(key) {
-        const index = this.hash(key); 
-        const bucket = this.buckets[index]; 
+        // Calculate the index for the key using the hash function and capacity
+        const index = this.hash(key) % this.capacity;
+        const bucket = this.buckets[index];
 
-        //searching for key in hashmap and removing if there
         for (let i = 0; i < bucket.length; i++) {
-            if (bucket[i][0] === key) {  
+            if (bucket[i][0] === key) {
                 bucket.splice(i, 1);
-                return `${true}: Entry has been removed`;
+                this.size--;
+                return true;
             }
         }
 
-        //return false if not found
-        return `${false}: entry does not exist. (nothing removed)`;
+        return false;
     }
-    
-    //method to return number of keys in hashmap
+
+    // Method to get the number of entries in the hashmap
     length() {
-        let amount = 0; 
-
-        //loop through all buckets
-        for (let i = 0; i < this.buckets.length; i++) {
-            const bucket = this.buckets[i]; 
-
-            //add the number of keys to the total
-            amount += bucket.length;
-        }
-
-        //return total
-        return `Number of entries: ${amount}.`;
+        return this.size;
     }
 
-    //method to clear all all entries in hashmap
+    // Method to clear all entries
     clear() {
-        //loop through all buckets
-        for (let i = 0; i < this.buckets.length; i++) {
-            const bucket = this.buckets[i]; 
-
-            //removing all buckets
-            bucket.splice(0, bucket.length);
-        }
-
-        //return total
-        return `Buckets have been cleared.`;
+        this.buckets = new Array(this.capacity).fill(null).map(() => []);
+        this.size = 0;
     }
 
-    //method to return an arrayn of all keys in hasmap
+    // Method to get all keys in the hashmap
     keys() {
-        //initliazing empty array and buckets and indexes
-        let keylist = [];
-
-        //loop through all buckets
-        for (let i = 0; i < this.buckets.length; i++) {
-            const bucket = this.buckets[i]; 
-
-            // Iterate through each key-value pair in the bucket
-            for (let [key] of bucket) {
-                keylist.push(key); 
-            }
-        }
-
-        //returning array
-        return `Keys: ${keylist}`;
-    }
-
-    //method to return array of values in hashmap
-    values() {
-        //initliazing empty array and buckets and indexes
-        let valuelist = [];
-
-        //loop through all buckets
-        for (let i = 0; i < this.buckets.length; i++) {
-            const bucket = this.buckets[i]; 
-
-            // Iterate through each key-value pair in the bucket
-            for (let [key, value] of bucket) {
-                valuelist.push(value); 
-            }
-        }
-
-        //returning array
-        return `Values: ${valuelist}`;
-    }
-
-    //method to return an array that contains each key, value pair
-    entries() {
-        //initliazing empty array and buckets and indexes
-        let entrylist = [];
-
-        //loop through all buckets
-        for (let i = 0; i < this.buckets.length; i++) {
-            const bucket = this.buckets[i]; 
-
-            // Iterate through each key-value pair in the bucket
-            for (let [key, value] of bucket) {
-                entrylist.push([key, value]); 
-            }
-        }
-
-        //returning array
-        return `Entries: ${entrylist}`;
-    }
-
-    // Method to resize (double the capacity and rehash entries)
-    resize() {
-        // Double the capacity
-        const newCapacity = this.capacity * 2;
-        const newBuckets = new Array(newCapacity).fill(null).map(() => []);
-
-        // Rehash all entries into the new buckets
+        const keyList = [];
         for (let i = 0; i < this.buckets.length; i++) {
             const bucket = this.buckets[i];
-
-            for (let j = 0; j < bucket.length; j++) {
-                const [key, value] = bucket[j];
-                const newIndex = this.hash(key) % newCapacity;
-                newBuckets[newIndex].push([key, value]);
+            for (let [key] of bucket) {
+                keyList.push(key);
             }
         }
+        return keyList;
+    }
 
-        // Update the capacity and buckets
-        this.capacity = newCapacity;
-        this.buckets = newBuckets;
+    // Method to get all values in the hashmap
+    values() {
+        const valueList = [];
+        for (let i = 0; i < this.buckets.length; i++) {
+            const bucket = this.buckets[i];
+            for (let [, value] of bucket) {
+                valueList.push(value);
+            }
+        }
+        return valueList;
+    }
+
+    // Method to get all entries (key-value pairs)
+    entries() {
+        const entryList = [];
+        for (let i = 0; i < this.buckets.length; i++) {
+            const bucket = this.buckets[i];
+            for (let [key, value] of bucket) {
+                entryList.push([key, value]);
+            }
+        }
+        return entryList;
     }
 }
