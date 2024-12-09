@@ -16,7 +16,10 @@ test.set('jacket', 'blue')
 test.set('kite', 'pink')
 test.set('lion', 'golden')
 
-console.log(test.keys())
 
+
+//tested the methods myself they work, have fun testing them if you like!!!
+
+//use python server dont forget to clear cache/hard reload!
 
 
